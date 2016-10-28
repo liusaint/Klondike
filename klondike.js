@@ -1,3 +1,10 @@
+/*windows纸牌
+
+*author:liusaint1992
+*email:841766635@qq.com
+*date:20161028
+*/
+
 function Klondike(){
 	//备份一个原始的数据
 	this.baseBrand = this.createAll();
@@ -8,7 +15,6 @@ Klondike.prototype = {
 
 		//发牌
 		this.divBrand();
-
 
 	},
 	//生成原始的牌。52张牌
@@ -58,7 +64,6 @@ Klondike.prototype = {
 		}
 
 	}
-
 
 }
 
