@@ -17,7 +17,7 @@ Klondike.prototype = {
 	},
 	//生成原始的牌。52张牌
 	createAll:function(){
-		var numArr = [1,2,3,4,5,6,7,8,9,10,'J','Q','K'];
+		var numArr = ['A',2,3,4,5,6,7,8,9,10,'J','Q','K'];
 		//红桃 黑桃 方块 梅花
 		var typeArr = ['red-heart','black-spade','red-block','black-plum'];
 		var pArr = [];
@@ -65,6 +65,12 @@ Klondike.prototype = {
 			//翻开第一张
 			this.openBrand(this.downArr[i]);
 		}
+		this.okObj = {
+			'red-heart':[],
+			'black-spade':[],
+			'red-block':[],
+			'black-plum':[]
+		}
 	},
 	//翻牌，打开一张牌。第二个参数不填就默认翻第一张
 	openBrand:function(arr,index){
@@ -72,10 +78,13 @@ Klondike.prototype = {
 		arr[index] && (arr[index].status = 'open');
 	},
 	//获取某张牌的index。用来比较大小。
-	getIndex：function(obj){
+	getIndex:function(obj){
 		var num = obj.num;
 		var index;
 		switch(num){
+			case 'A':
+			index = 0;
+			break;
 			case 'J':
 			index = 10;
 			break;
@@ -86,13 +95,28 @@ Klondike.prototype = {
 			index = 12;
 			break;
 			default:
-			index = num;
+			index = num-1;
 			break;
 		}
 	},
 	//判断两张牌的颜色是否一样,一样就返回true,不一样就返回false;
 	checkColor:function(obj1,obj2){
 		return obj1.type.split("-")[0] === obj2.type.split("-")[0]
+	},
+	//数组移动。从左上移动。或下面的牌之间的移动。一张或几张。
+
+	moveArr:function(arrFrom,arrTo){
+		//如果是空数组，可以接受'K';
+		if(arrTo.length == 0){
+var fromLen = arrFrom.length;
+			if(arrFrom[arrFrom.length-1].num == 'K'){
+				// for (var i = 0; i < Things.length; i++) {
+				// 	Things[i]
+				// }
+			}
+		}
+
+
 	}
 
 }
@@ -107,3 +131,6 @@ g.init();
 2.发牌。左上24张。下面7组。分别为1到7张。
 3.翻牌。左上，以及下面的7组的第一张牌翻开。
 4.一些规则性的基本方法。
+
+
+*/

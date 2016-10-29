@@ -1,0 +1,40 @@
+.top-left-brands,
+
+.top-right-brands{
+	display: inline-block;
+}
+.top-right-brands{
+	margin-left: 200px;
+}
+.left-close,
+.left-open{
+	display: inline-block;
+}
+.brand-open,
+.brand-close{
+	height: 160px;
+	width: 120px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+}
+.brand-close{
+	background: url(close.png);
+}
+
+.ok-brands{
+	height: 160px;
+	width: 120px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	display: inline-block;
+}
+.bottom-wrap{
+	margin-top: 150px;
+}
+.bottom-brands{
+	height: 160px;
+	width: 120px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	display: inline-block;
+}
