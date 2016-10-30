@@ -124,7 +124,7 @@ Klondike.prototype = {
 
 		return false;
 
-	}
+	},
 
 	//数组移动。从左上移动。或下面的牌之间的移动。一张或几张。
 
