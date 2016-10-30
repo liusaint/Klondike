@@ -138,6 +138,34 @@ Klondike.prototype = {
 		}
 
 		arrFrom.length = 0;
+	},
+
+	//检测移动到右上的几个框里行不行。参数是这张牌对应的这个数组参数。
+	checkMoveOk:function(obj,toDom){
+		var num = obj.num;
+		var index = this.getIndex(num);
+		var acceptType = toDom.data('type');
+		var type = obj.type;
+		// 类型不合适
+		if(type != acceptType){
+			return false;
+		}
+
+		var toArr = this.okObj[type];
+		var toLen = toArr.length;
+		var bigIndex;
+		if(toLen == 0){
+			bigIndex = -1;
+		}else{
+			bigIndex = this.getIndex(toArr[toArr.length-1].num);
+		}
+		//检测是否与已有的最大值相关一个序号。
+		if(index - bigIndex != 1){
+			return false ;
+		}
+
+		return true;
+		
 	}
 
 }
@@ -152,6 +180,7 @@ g.init();
 2.发牌。左上24张。下面7组。分别为1到7张。
 3.翻牌。左上，以及下面的7组的第一张牌翻开。
 4.一些规则性的基本方法。
+
 
 
 */
