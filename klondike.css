@@ -2,6 +2,7 @@
 
 .top-right-brands{
 	display: inline-block;
+	vertical-align: top;
 }
 .top-right-brands{
 	margin-left: 200px;
@@ -9,6 +10,7 @@
 .left-close,
 .left-open{
 	display: inline-block;
+	vertical-align: top;
 }
 .brand-open,
 .brand-close{
@@ -16,6 +18,42 @@
 	width: 120px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
+}
+.brand-open i{
+	display: inline-block;
+	height: 16px;
+	width: 16px;
+	vertical-align: middle;
+}
+.brand-open.red-heart i{
+background: url(red_tao.png);
+}
+.brand-open.black-spade i{
+background: url(black_tao.png);
+
+}
+.brand-open.red-block i{
+background: url(square.png);
+
+}
+.brand-open.red-plum i{
+background: url(mei.png);
+
+}
+.brand-open .red-heart .txt,.brand-open .red-block{
+color: red;
+}
+.brand-open .black-spade i{
+background: url(black_tao.png);
+
+}
+.brand-open .red-block i{
+background: url(square.png);
+
+}
+.brand-open .red-plum i{
+background: url(mei.png);
+
 }
 .brand-close{
 	background: url(close.png);

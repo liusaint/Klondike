@@ -99,24 +99,45 @@ Klondike.prototype = {
 			break;
 		}
 	},
-	//判断两张牌的颜色是否一样,一样就返回true,不一样就返回false;
+	//判断两张牌的颜色是否一样,不一样就返回true,一样就返回false;
 	checkColor:function(obj1,obj2){
-		return obj1.type.split("-")[0] === obj2.type.split("-")[0]
+		return obj1.type.split("-")[0] !== obj2.type.split("-")[0]
 	},
+	//判断一张牌或一个数组是否可以移动到指定位置 规则
+	checkMove:function(arrFrom,arrTo){
+		//出发数组中最大值。
+		var fromBig = arrFrom[arrFrom.length-1];
+		//如果是空数组，可以接受'K';
+		if(arrTo.length == 0){
+			var fromLen = arrFrom.length;
+			if(fromBig.num == 'K'){
+				return true;
+			}
+			return false;
+		}
+		//目标数组中最小值
+		var toLittle = arrTo[0];
+		//出发数组中的最大值与目的数组中的最小值得比较。颜色不同。
+		if((this.getIndex(toLittle.num) - this.getIndex(fromBig.num) == 1)&&this.checkColor(toLittle,fromBig)){
+			return true;M
+		}
+
+		return false;
+
+	}
+
 	//数组移动。从左上移动。或下面的牌之间的移动。一张或几张。
 
 	moveArr:function(arrFrom,arrTo){
-		//如果是空数组，可以接受'K';
-		if(arrTo.length == 0){
-var fromLen = arrFrom.length;
-			if(arrFrom[arrFrom.length-1].num == 'K'){
-				// for (var i = 0; i < Things.length; i++) {
-				// 	Things[i]
-				// }
-			}
+		//检测是否可以移动
+		if(!this.checkMove(arrFrom,arrTo)){
+			return;
+		}
+		for (var i = arrFrom.length-1; i >=0; i--) {
+			arrTo.push(arrFrom[i]);
 		}
 
-
+		arrFrom.length = 0;
 	}
 
 }
