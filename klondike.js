@@ -64,6 +64,7 @@ Klondike.prototype = {
 			this.downArr[i] = this.getRoundBrand(i+1,this.downAllArr);
 			//翻开第一张
 			this.openBrand(this.downArr[i]);
+			this.creatBottomDoms(this.downArr[i],i);
 		}
 		this.okObj = {
 			'red-heart':[],
@@ -71,6 +72,8 @@ Klondike.prototype = {
 			'red-block':[],
 			'black-plum':[]
 		}
+		//左上角下次打开的是哪一个，默认是0。
+		this.leftOpenIndex = 0;
 	},
 	//翻牌，打开一张牌。第二个参数不填就默认翻第一张
 	openBrand:function(arr,index){
@@ -127,7 +130,6 @@ Klondike.prototype = {
 	},
 
 	//数组移动。从左上移动。或下面的牌之间的移动。一张或几张。
-
 	moveArr:function(arrFrom,arrTo){
 		//检测是否可以移动
 		if(!this.checkMove(arrFrom,arrTo)){
@@ -166,6 +168,95 @@ Klondike.prototype = {
 
 		return true;
 		
+	},
+	//如果它符合条件。可以把它移动到okArr中去
+	checkGoHome:function(obj){
+		var type = obj.type;
+		var toArr = this.okObj[type];
+		var toLen = toArr.length;
+		var theIndex = this.getIndex(obj.num);
+		//目标数组是空的，则检测其index
+		if( 0 == toLen && theIndex == 0){
+			return true;
+		}
+		//如果这个值的index等于目的数组的长度。则可以。
+		if(theIndex == toLen){
+			return true;
+		}
+		return false;
+	},
+	//点两下自动回家。
+	autoGoHome:function(fromArr,obj){
+		//检测一下。
+		if(!this.checkGoHome(obj)){
+			return;
+		}
+
+		// 移动到目的数组
+		var type = obj.type;
+		var toArr = this.okObj[type];
+		toArr.push(obj);
+		fromArr.length = fromArr.length - 1;
+	},
+	//点开一个左上角的
+	openTop:function(){
+
+		this.upArr;
+		this.upArr[this.topLeftIndex].status = open;
+		this.changeLeftIndex();
+		
+	},
+	changeLeftIndex:function(){
+		this.topLeftIndex ++;
+		if(this.topLeftIndex == this.upArr.length){
+			this.topLeftIndex = 0;
+		}
+	},
+	//左上移除一个
+	leftDel:function(index){
+		// var upLen = this.upArr.length;
+		// if(upLen == 1){
+		// 	this.upArr.length = 0;
+		// }
+		this.upArr.splice(this.topLeftIndex-1,1);
+	},
+	insertBrand:function(){
+
+	},
+	searchIndex:function(dom,arr){
+
+	},
+	//下面是一些dom方法。
+	//创建下面的初始。
+	creatBottomDoms:function(arr,index){
+		var html = '';
+		var brandHtml = '';
+		var type;
+		var num;
+		var status;
+		var cssClass;
+		var jqObj = $('.bottom-brands').eq(index);
+		for (var i = 0,len = arr.length; i < arr.length; i++) {
+			type = arr[i].type;
+			num = arr[i].num;
+			status =arr[i].status;
+			if(status == 'close'){
+				cssClass = 'brand brand-close';
+				brandHtml = '<div class="'+cssClass+'">'
+				+ brandHtml
+				+'</div>';
+
+			}else{
+				cssClass = 'brand brand-open '+type;
+
+				brandHtml = '<div class="'+cssClass+'">'
+				+'<span class="txt">'+ num +'</span>'
+				+'<i></i>'
+				+ brandHtml
+				+'</div>';
+			}
+		}
+		jqObj.append(brandHtml)
 	}
 
 }
@@ -180,6 +271,9 @@ g.init();
 2.发牌。左上24张。下面7组。分别为1到7张。
 3.翻牌。左上，以及下面的7组的第一张牌翻开。
 4.一些规则性的基本方法。
+10月31日
+5.初始界面。布局。
+
 
 
 

@@ -1,0 +1,50 @@
+
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,user-scalable=no" />
+	<link  href="klondike.css"  media="all" rel="stylesheet" />
+	<script src="http://apps.bdimg.com/libs/jquery/1.8.1/jquery.min.js"></script>
+	<script src="klondike.js"></script>
+
+</head>
+<body>
+	<style>
+		.a,.b{
+			height: 50px;
+			width: 50px;
+			border: 1px solid #ccc;
+			text-align: center;
+			line-height: 100%;
+		}
+		.ball{
+			border-radius: 50%;
+			height: 10px;
+			width: 10px;
+			border: 1px solid #ccc;
+		}
+	</style>
+
+	<div class="a" ondrop="drop(event)" ondragover="allowDrop(event)">A</div>
+	<div class="b" ondrop="drop(event)" ondragover="allowDrop(event)">B</div>
+	<div class="ball" draggable="true" ondragstart="drag(event)" ></div>
+	<script>
+		function allowDrop(ev)
+		{
+			ev.preventDefault();
+		}
+		function drag(ev)
+		{
+			ev.dataTransfer.setData("Text",ev.target.id);
+		}
+
+		function drop(ev)
+		{
+			ev.preventDefault();
+			var data=ev.dataTransfer.getData("Text");
+			ev.target.appendChild(document.getElementById(data));
+		}
+	</script>
+</body>
+</html>

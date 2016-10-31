@@ -7,17 +7,29 @@
 .top-right-brands{
 	margin-left: 200px;
 }
+.bottom-brands{
+	position: relative;
+}
 .left-close,
 .left-open{
 	display: inline-block;
 	vertical-align: top;
 }
+.brand,
 .brand-open,
 .brand-close{
 	height: 160px;
 	width: 120px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
+}
+.brand-open{
+	background: #fff;
+}
+.bottom-brands .brand{
+	position: absolute;
+	top: 10px;
+	left: -1px;
 }
 .brand-open i{
 	display: inline-block;
@@ -70,9 +82,6 @@ background: url(mei.png);
 	margin-top: 150px;
 }
 .bottom-brands{
-	height: 160px;
 	width: 120px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
 	display: inline-block;
 }
