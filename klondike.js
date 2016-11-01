@@ -73,7 +73,7 @@ Klondike.prototype = {
 			'black-plum':[]
 		}
 		//左上角下次打开的是哪一个，默认是0。
-		this.leftOpenIndex = 0;
+		this.topLeftIndex = 0;
 	},
 	//翻牌，打开一张牌。第二个参数不填就默认翻第一张
 	openBrand:function(arr,index){
@@ -203,6 +203,8 @@ Klondike.prototype = {
 
 		this.upArr;
 		this.upArr[this.topLeftIndex].status = open;
+		var html = this.createBrandDom(this.upArr[this.topLeftIndex]);
+		$(".left-open").append(html);
 		this.changeLeftIndex();
 		
 	},
@@ -210,6 +212,9 @@ Klondike.prototype = {
 		this.topLeftIndex ++;
 		if(this.topLeftIndex == this.upArr.length){
 			this.topLeftIndex = 0;
+			$(".left-close").removeClass('brand-close');
+		}else{
+			$(".left-close").addClass('brand-close');
 		}
 	},
 	//左上移除一个
@@ -225,6 +230,28 @@ Klondike.prototype = {
 	},
 	searchIndex:function(dom,arr){
 
+	},
+	createBrandDom:function(obj){
+
+		var brandHtml = '';
+		var type = obj.type;
+		var num = obj.num;
+		var status = obj.status;
+		var cssClass = '';
+
+		if(status == 'close'){
+			cssClass = 'brand brand-close';
+			brandHtml = '<div class="'+cssClass+'">'
+			+'</div>';
+		}else{
+			cssClass = 'brand brand-open '+type;
+			brandHtml = '<div class="'+cssClass+'">'
+			+'<span class="txt">'+ num +'</span>'
+			+'<i></i>'
+			+'</div>';
+		}
+
+		return brandHtml;
 	},
 	//下面是一些dom方法。
 	//创建下面的初始。
@@ -257,13 +284,27 @@ Klondike.prototype = {
 			}
 		}
 		jqObj.append(brandHtml)
+	},
+	//左边打开一个
+	openLeft:function(){
+
+	},
+	//绑定事件
+	bindEvent:function(){
+		var that = this;
+		$("body").on('click', '.left-close', function(event) {
+			
+			that.openTop();
+		});
 	}
+
 
 }
 
 var g = new Klondike();
 
 g.init();
+g.bindEvent();
 
 
 /*完成步骤：

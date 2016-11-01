@@ -48,7 +48,7 @@ background: url(black_tao.png);
 background: url(square.png);
 
 }
-.brand-open.red-plum i{
+.brand-open.black-plum i{
 background: url(mei.png);
 
 }
@@ -84,4 +84,17 @@ background: url(mei.png);
 .bottom-brands{
 	width: 120px;
 	display: inline-block;
+}
+.left-open{
+	position: relative;
+
+}
+.left-close{
+	height: 160px;
+	width: 120px;
+}
+.left-open .brand-open{
+	position: absolute;
+	left: 0;
+	top: 0;
 }
