@@ -292,8 +292,8 @@ Klondike.prototype = {
 	//绑定事件
 	bindEvent:function(){
 		var that = this;
-		$("body").on('click', '.left-close', function(event) {
-			
+		//左上点击效果。
+		$("body").on('click', '.left-close', function(event) {		
 			that.openTop();
 		});
 	}
@@ -314,6 +314,7 @@ g.bindEvent();
 4.一些规则性的基本方法。
 10月31日
 5.初始界面。布局。
+6.拖动。http://www.zhangxinxu.com/study/js/zxx.drag.1.0.js
 
 
 
