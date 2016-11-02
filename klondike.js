@@ -296,6 +296,46 @@ Klondike.prototype = {
 		$("body").on('click', '.left-close', function(event) {		
 			that.openTop();
 		});
+
+		(function(){
+			var oldX;
+			var oldY;
+			var eX;
+			var eY;
+			var drag = false;
+			var moveObj;
+			var timer;
+			$("body").on('mousedown', '.brand-open', function(event) {
+				oldX = $(this).offset().left;
+				oldY = $(this).offset().top;
+				eX = event.pageX;
+				eY = event.pageY;
+				drag = true;
+				moveObj = $(this);
+				return false;
+			});
+			$("body").on("mousemove",".brand-open",function(event){
+				if(!drag) return;
+				clearTimeout(timer);
+				timer = setTimeout(function(){
+					var nowX = event.pageX;
+					var nowY = event.pageY;
+					var disX = nowX - eX;
+					var disY = nowY - eY;
+					moveObj.offset({
+						left:oldX + disX,
+						top:oldY +disY
+					})
+				}, 30);
+
+				return false;
+			})
+			$("body").on("mouseup",".brand-open",function(event){
+				drag = false;
+				return false;
+			})
+		})()
+
 	}
 
 
