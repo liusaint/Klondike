@@ -27,9 +27,10 @@
 	background: #fff;
 }
 .bottom-brands .brand{
-	position: absolute;
-	top: 10px;
-	left: -1px;
+	/*position: absolute;*/
+	margin-top: 10px;
+	margin-left: -1px;
+
 }
 .brand-open i{
 	display: inline-block;
@@ -84,6 +85,7 @@ background: url(mei.png);
 .bottom-brands{
 	width: 120px;
 	display: inline-block;
+	vertical-align: top;
 }
 .left-open{
 	position: relative;
@@ -97,4 +99,7 @@ background: url(mei.png);
 	position: absolute;
 	left: 0;
 	top: 0;
+}
+.MovingBrand{
+	position: absolute;
 }

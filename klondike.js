@@ -8,6 +8,7 @@
 function Klondike(){
 	//备份一个原始的数据
 	this.baseBrand = this.createAll();
+
 }
 Klondike.prototype = {
 	//初始操作
@@ -289,6 +290,81 @@ Klondike.prototype = {
 	openLeft:function(){
 
 	},
+	//移动牌。
+	moveBrands:function(domObj,domE){
+		var that = this;
+		//创建一个用于移动的dom。放在body下面。
+		var moveDomObj = $(domObj.prop('outerHTML')).addClass('MovingBrand');
+		$("body").append(moveDomObj);
+		// 给这个创建的dom设置一个正确的位置。
+		moveDomObj.offset(domObj.offset());
+		//移动过程中先隐藏原来的。要设置一个timer。不然会影响offset的计算
+		setTimeout(function(){
+			domObj.hide();
+		}, 1);
+		
+
+		var oldX = domObj.offset().left;
+		var oldY = domObj.offset().top;
+
+
+		var eX = domE.pageX;
+		var eY = domE.pageY;
+		var drag = false;	
+		var timer;
+		that.moving = true;
+
+		moveDomObj.mousemove(function(event) {
+			console.log(that.moving,drag);
+			if(that.moving == false) return;
+			if(drag) return;
+
+			drag = true;
+			clearTimeout(timer);
+			timer = setTimeout(function(){
+				var nowX = event.pageX;
+				var nowY = event.pageY;
+				var disX = nowX - eX;
+				var disY = nowY - eY;
+				moveDomObj.offset({
+					left:oldX + disX,
+					top:oldY +disY
+				})
+				console.log(oldX + disX,oldY +disY);
+				drag = false;
+			}, 0);
+
+			return false;
+		});
+
+		$("body").off('mouseup').on('mouseup',function(event) {		
+			drag = false;
+			clearTimeout(timer);
+			that.moving = false;
+			$(".MovingBrand").remove();
+			domObj.show();
+			return false;
+		});
+
+
+
+	},
+	//检测牌是否移动到了某个区域内。
+	//检测这张在移动的牌，有一个顶点在其坐标范围内。
+	getHoverDoms:function(domObj){
+		//检测是否移动到了下面的牌的区域内
+		var bottomDoms = $(".bottom-brands .brand-open");
+		var bottomLen = bottomDoms.length;
+
+		for (var i = 0; i < bottomLen; i++) {
+			
+		}
+
+
+
+
+	},
+	checkHover
 	//绑定事件
 	bindEvent:function(){
 		var that = this;
@@ -297,44 +373,11 @@ Klondike.prototype = {
 			that.openTop();
 		});
 
-		(function(){
-			var oldX;
-			var oldY;
-			var eX;
-			var eY;
-			var drag = false;
-			var moveObj;
-			var timer;
-			$("body").on('mousedown', '.brand-open', function(event) {
-				oldX = $(this).offset().left;
-				oldY = $(this).offset().top;
-				eX = event.pageX;
-				eY = event.pageY;
-				drag = true;
-				moveObj = $(this);
-				return false;
-			});
-			$("body").on("mousemove",".brand-open",function(event){
-				if(!drag) return;
-				clearTimeout(timer);
-				timer = setTimeout(function(){
-					var nowX = event.pageX;
-					var nowY = event.pageY;
-					var disX = nowX - eX;
-					var disY = nowY - eY;
-					moveObj.offset({
-						left:oldX + disX,
-						top:oldY +disY
-					})
-				}, 30);
-
-				return false;
-			})
-			$("body").on("mouseup",".brand-open",function(event){
-				drag = false;
-				return false;
-			})
-		})()
+		$("body").on('mousedown', '.brand-open:not(.MovingBrand)', function(event) {
+			if(that.moving == true) return;
+			that.moving == true;			
+			that.moveBrands($(this),event);
+		});
 
 	}
 
