@@ -359,12 +359,64 @@ Klondike.prototype = {
 		for (var i = 0; i < bottomLen; i++) {
 			
 		}
+	},
+	//检测牌是否移动到了某个区域内。
+	//检测这张在移动的牌，有一个顶点在其坐标范围内。
+	//A移动到B上。
+	checkHover:function(domAObj,domBObj){
 
 
+		// 目标dom的左上和右下坐标。
+		var BOffset = domBObj.offset();
+		var BX = BOffset.left;
+		var BY = BOffset.top;
+		var BX1 = BX + domBObj[0].offsetWidth; 
+		var BY1 = BY + domBObj[0].offsetHeight; 
 
+		//移动者
+		var AOffset = domAObj.offset();
+		var height = domAObj[0].offsetHeight;
+		var width = domAObj[0].offsetWidth;
+
+		//
+		var checkArr = [];
+		// 左上角
+		var AX = AOffset.left;
+		var AY = AOffset.top;
+		checkArr.push([AX,AY]);		
+
+		// 右上
+		var AX1 = AX + width;
+		var AY1 = AY;
+		checkArr.push([AX1,AY1]);			
+
+		// 左下
+		var AX2 = AX;
+		var AY2 = AY + height;
+		checkArr.push([AX2,AY2]);	
+
+		//右下
+		var AX3 = AX + width; 
+		var AY3 = AY + height;
+		checkArr.push([AX3,AY3]);
+
+		for (var i = 0,checkLen = checkArr.length; i < checkLen; i++) {
+			var checkRes = checkIn(checkArr[i][0],checkArr[i][1]);
+			if(checkRes){
+				return checkRes;
+			}
+		}	 
+
+		//检测坐标是否在某区域内。
+		function checkIn(x,y){
+
+			if(x>BX && y>BY && x<BX1 && Y<BY1){
+				return true;
+			}
+			return false;
+		}
 
 	},
-	checkHover
 	//绑定事件
 	bindEvent:function(){
 		var that = this;
