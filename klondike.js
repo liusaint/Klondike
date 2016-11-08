@@ -315,7 +315,7 @@ Klondike.prototype = {
 		that.moving = true;
 
 		moveDomObj.mousemove(function(event) {
-		
+
 			if(that.moving == false) return;
 			if(drag) return;
 
@@ -330,7 +330,7 @@ Klondike.prototype = {
 					left:oldX + disX,
 					top:oldY +disY
 				})
-	
+
 				drag = false;
 			}, 0);
 
@@ -342,8 +342,8 @@ Klondike.prototype = {
 			clearTimeout(timer);
 			that.moving = false;
 			// $(".MovingBrand").remove();
-			that.getHoverDoms();
-			domObj.show();
+			that.getHoverDoms(domObj);
+			// domObj.show();
 			return false;
 		});
 
@@ -356,7 +356,7 @@ Klondike.prototype = {
 		//检测是否移动到了下面的牌的区域内
 		var bottomDoms = $(".bottom-brands .brand-open");
 		var bottomLen = bottomDoms.length;
-var inDomsArr = [];
+		var inDomsArr = [];
 		for (var i = 0; i < bottomLen; i++) {
 			if(this.checkHover(bottomDoms.eq(i),$(".MovingBrand"))){
 				inDomsArr.push(i);
@@ -364,6 +364,12 @@ var inDomsArr = [];
 
 		}
 		console.log(inDomsArr);
+		var inLen = inDomsArr.length;
+		// 表示不在任何一个地方。则回到原地去。
+		if(0 == inLen){
+			domObj.show();
+			$(".MovingBrand").remove();
+		}
 	},
 	//检测牌是否移动到了某个区域内。
 	//检测这张在移动的牌，有一个顶点在其坐标范围内。
