@@ -140,11 +140,36 @@ Klondike.prototype = {
 			$(".MovingBrand").remove();
 			return false;
 		}
+
 		for (var i = arrFrom.length-1; i >=0; i--) {
 			arrTo.unshift(arrFrom[i]);
 		}
+		var fromArrIndex = domObj.parents('.bottom-brands').index();
+		var toArrIndex = this.getArrIndex(arrTo,this.downArr);
 
+		$(".MovingBrand").removeClass("MovingBrand").appendTo(".bottom-brands:eq("+toArrIndex+") .brand:last");
+
+		domObj.remove();
+		//删除第一个元素.后期可用splice进行多个的操作。
+		this.downArr[fromArrIndex].shift();
+
+		this.downArr[fromArrIndex][0]
+		&&(this.downArr[fromArrIndex][0].status = 'open')
+		&&$(".bottom-brands:eq("+fromArrIndex+") .brand:last")
+		.addClass('brand-open')
+		.removeClass('brand-close')
+		.addClass(this.downArr[fromArrIndex][0].type)
+		.html('<span class="txt">'+this.downArr[fromArrIndex][0].num+'</span><i></i>');
 		arrFrom.length = 0;
+	},
+	//获取一个arr在另一个arr中的次序。这里可以用判断对象相等。
+	getArrIndex:function(arrSmall,arrBig){
+		for (var i = 0,len=arrBig.length; i < len; i++) {
+			if(arrSmall == arrBig[i]){
+				return i;
+			}
+		}
+
 	},
 
 	//检测移动到右上的几个框里行不行。参数是这张牌对应的这个数组参数。
