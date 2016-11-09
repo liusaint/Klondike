@@ -102,6 +102,7 @@ Klondike.prototype = {
 			index = num-1;
 			break;
 		}
+		return index;
 	},
 	//判断两张牌的颜色是否一样,不一样就返回true,一样就返回false;
 	checkColor:function(obj1,obj2){
@@ -122,8 +123,8 @@ Klondike.prototype = {
 		//目标数组中最小值
 		var toLittle = arrTo[0];
 		//出发数组中的最大值与目的数组中的最小值得比较。颜色不同。
-		if((this.getIndex(toLittle.num) - this.getIndex(fromBig.num) == 1)&&this.checkColor(toLittle,fromBig)){
-			return true;M
+		if((this.getIndex(toLittle) - this.getIndex(fromBig) == 1)&&this.checkColor(toLittle,fromBig)){
+			return true;
 		}
 
 		return false;
@@ -131,13 +132,16 @@ Klondike.prototype = {
 	},
 
 	//数组移动。从左上移动。或下面的牌之间的移动。一张或几张。
-	moveArr:function(arrFrom,arrTo){
+	moveArr:function(arrFrom,arrTo,domObj){
 		//检测是否可以移动
+		debugger;
 		if(!this.checkMove(arrFrom,arrTo)){
-			return;
+			domObj.show();
+			$(".MovingBrand").remove();
+			return false;
 		}
 		for (var i = arrFrom.length-1; i >=0; i--) {
-			arrTo.push(arrFrom[i]);
+			arrTo.unshift(arrFrom[i]);
 		}
 
 		arrFrom.length = 0;
@@ -357,7 +361,12 @@ Klondike.prototype = {
 		var bottomDoms = $(".bottom-brands .brand-open");
 		var bottomLen = bottomDoms.length;
 		var inDomsArr = [];
+		var domIndex = domObj.parents('.bottom-brands').index();
 		for (var i = 0; i < bottomLen; i++) {
+			//它本身那一列
+			if(i == domIndex){
+				continue;
+			}
 			if(this.checkHover(bottomDoms.eq(i),$(".MovingBrand"))){
 				inDomsArr.push(i);
 			}
@@ -369,6 +378,14 @@ Klondike.prototype = {
 		if(0 == inLen){
 			domObj.show();
 			$(".MovingBrand").remove();
+		}else{
+			//对于区域内的。进行检查。
+			for (var j = 0; j < inDomsArr.length; j++) {
+				//移动，先不考虑两个都合适的情况
+				if(this.moveArr([this.downArr[domIndex][0]],this.downArr[inDomsArr[j]],domObj)){
+					break;
+				};
+			}
 		}
 	},
 	//检测牌是否移动到了某个区域内。
