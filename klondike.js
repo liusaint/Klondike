@@ -134,7 +134,7 @@ Klondike.prototype = {
 	//数组移动。从左上移动。或下面的牌之间的移动。一张或几张。
 	moveArr:function(arrFrom,arrTo,domObj){
 		//检测是否可以移动
-		debugger;
+		
 		if(!this.checkMove(arrFrom,arrTo)){
 			domObj.show();
 			$(".MovingBrand").remove();
@@ -146,7 +146,7 @@ Klondike.prototype = {
 		}
 		var fromArrIndex = domObj.parents('.bottom-brands').index();
 		var toArrIndex = this.getArrIndex(arrTo,this.downArr);
-
+console.log(fromArrIndex);
 		$(".MovingBrand").removeClass("MovingBrand").appendTo(".bottom-brands:eq("+toArrIndex+") .brand:last");
 
 		domObj.remove();
@@ -383,7 +383,7 @@ Klondike.prototype = {
 	//检测这张在移动的牌，有一个顶点在其坐标范围内。
 	getHoverDoms:function(domObj){
 		//检测是否移动到了下面的牌的区域内
-		var bottomDoms = $(".bottom-brands .brand-open");
+		var bottomDoms = $(".bottom-brands"); //.brand-open
 		var bottomLen = bottomDoms.length;
 		var inDomsArr = [];
 		var domIndex = domObj.parents('.bottom-brands').index();

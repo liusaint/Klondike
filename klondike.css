@@ -41,30 +41,36 @@
 .brand-open.red-heart i{
 background: url(red_tao.png);
 }
-.brand-open.black-spade i{
+.brand-open.red-heart>.txt,.brand-open.red-block>.txt{
+	color: red;
+}
+.brand-open.black-spade>.txt,.brand-open.black-plum>.txt{
+	color: black;
+}
+.brand-open.black-spade>i{
 background: url(black_tao.png);
 
 }
-.brand-open.red-block i{
+.brand-open.red-block>i{
 background: url(square.png);
 
 }
-.brand-open.black-plum i{
+.brand-open.black-plum>i{
 background: url(mei.png);
 
 }
-.brand-open .red-heart .txt,.brand-open .red-block{
+/*.brand-open .red-heart .txt,.brand-open .red-block{
 color: red;
-}
-.brand-open .black-spade i{
+}*/
+.brand-open .black-spade>i{
 background: url(black_tao.png);
 
 }
-.brand-open .red-block i{
+.brand-open .red-block>i{
 background: url(square.png);
 
 }
-.brand-open .red-plum i{
+.brand-open .red-plum>i{
 background: url(mei.png);
 
 }
@@ -84,6 +90,7 @@ background: url(mei.png);
 }
 .bottom-brands{
 	width: 120px;
+	min-height: 160px;
 	display: inline-block;
 	vertical-align: top;
 }
