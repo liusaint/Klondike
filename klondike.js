@@ -140,13 +140,13 @@ Klondike.prototype = {
 			$(".MovingBrand").remove();
 			return false;
 		}
-
+debugger;
 		for (var i = arrFrom.length-1; i >=0; i--) {
 			arrTo.unshift(arrFrom[i]);
 		}
 		var fromArrIndex = domObj.parents('.bottom-brands').index();
 		var toArrIndex = this.getArrIndex(arrTo,this.downArr);
-console.log(fromArrIndex);
+		console.log(fromArrIndex);
 		$(".MovingBrand").removeClass("MovingBrand").appendTo(".bottom-brands:eq("+toArrIndex+") .brand:last");
 
 		domObj.remove();
@@ -405,9 +405,13 @@ console.log(fromArrIndex);
 			$(".MovingBrand").remove();
 		}else{
 			//对于区域内的。进行检查。
+			debugger;
+			//表示在移动的有几张牌
+			var moveLen = domObj.parent().find('.brand-open').length;
 			for (var j = 0; j < inDomsArr.length; j++) {
-				//移动，先不考虑两个都合适的情况
-				if(this.moveArr([this.downArr[domIndex][0]],this.downArr[inDomsArr[j]],domObj)){
+				//移动，两个都适合的情况移动第一个。
+				console.log(this.downArr[domIndex].slice(0,moveLen));
+				if(this.moveArr(this.downArr[domIndex].slice(0,moveLen),this.downArr[inDomsArr[j]],domObj)){
 					break;
 				};
 			}
