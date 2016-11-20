@@ -84,6 +84,12 @@ background: url(mei.png);
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	display: inline-block;
+	position: relative;
+}
+.ok-brands .brand{
+	position: absolute;
+	left: 0 !important;
+	top: 0 !important;
 }
 .bottom-wrap{
 	margin-top: 150px;

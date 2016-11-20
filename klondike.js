@@ -140,7 +140,7 @@ Klondike.prototype = {
 			$(".MovingBrand").remove();
 			return false;
 		}
-debugger;
+		// debugger;
 		for (var i = arrFrom.length-1; i >=0; i--) {
 			arrTo.unshift(arrFrom[i]);
 		}
@@ -172,17 +172,18 @@ debugger;
 
 	},
 
-	//检测移动到右上的几个框里行不行。参数是这张牌对应的这个数组参数。
-	checkMoveOk:function(obj,toDom){
-		var num = obj.num;
-		var index = this.getIndex(num);
-		var acceptType = toDom.data('type');
-		var type = obj.type;
+	//检测移动到右上的几个框里行不行。参数是这张牌对应的这个obj参数。
+	checkMoveOk:function(obj,domIndex){
+		
+		var index = this.getIndex(obj);
+		var acceptDom = $(".ok-brands").eq(domIndex);
+
 		// 类型不合适
-		if(type != acceptType){
+		if(acceptDom.find("."+obj.type).length == 0 && acceptDom.find(".brand").length>0){
 			return false;
 		}
-
+		var type = obj.type;
+		debugger;
 		var toArr = this.okObj[type];
 		var toLen = toArr.length;
 		var bigIndex;
@@ -199,12 +200,45 @@ debugger;
 		return true;
 		
 	},
+	// 移动到okArr
+	moveOkArr:function(obj,toIndex,domObj){
+		//检查是否可以移动。
+		if(!this.checkMoveOk(obj,toIndex)){
+			return false;
+		}
+
+		this.okObj[obj.type].unshift(obj);
+
+		var fromArrIndex = domObj.parents('.bottom-brands').index();
+		
+		console.log(fromArrIndex);
+		// if($(".ok-brands:eq("+toIndex+") .brand").length>0){
+		// 	$(".MovingBrand").removeClass("MovingBrand").appendTo(".ok-brands:eq("+toIndex+") .brand:last");
+		// }else{
+			$(".MovingBrand").removeClass("MovingBrand").appendTo(".ok-brands:eq("+toIndex+")");
+		// }
+		
+
+		domObj.remove();
+		//删除第一个元素.后期可用splice进行多个的操作。
+		this.downArr[fromArrIndex].shift();
+
+		this.downArr[fromArrIndex][0]
+		&&(this.downArr[fromArrIndex][0].status = 'open')
+		&&$(".bottom-brands:eq("+fromArrIndex+") .brand:last")
+		.addClass('brand-open')
+		.removeClass('brand-close')
+		.addClass(this.downArr[fromArrIndex][0].type)
+		.html('<span class="txt">'+this.downArr[fromArrIndex][0].num+'</span><i></i>');
+		
+
+	},
 	//如果它符合条件。可以把它移动到okArr中去
 	checkGoHome:function(obj){
 		var type = obj.type;
 		var toArr = this.okObj[type];
 		var toLen = toArr.length;
-		var theIndex = this.getIndex(obj.num);
+		var theIndex = this.getIndex(obj);
 		//目标数组是空的，则检测其index
 		if( 0 == toLen && theIndex == 0){
 			return true;
@@ -216,8 +250,10 @@ debugger;
 		return false;
 	},
 	//点两下自动回家。
-	autoGoHome:function(fromArr,obj){
+	autoGoHome:function(fromArr){
+		var obj = fromArr[0];
 		//检测一下。
+		console.log(this.checkGoHome(obj));
 		if(!this.checkGoHome(obj)){
 			return;
 		}
@@ -366,10 +402,11 @@ debugger;
 			return false;
 		});
 
-		$("body").off('mouseup').on('mouseup',function(event) {		
-			drag = false;
-			clearTimeout(timer);
-			that.moving = false;
+		$("body").off('mouseup').on('mouseup',function(event) {	
+		// debugger;	
+		drag = false;
+		clearTimeout(timer);
+		that.moving = false;
 			// $(".MovingBrand").remove();
 			that.getHoverDoms(domObj);
 			// domObj.show();
@@ -382,6 +419,16 @@ debugger;
 	//检测牌是否移动到了某个区域内。
 	//检测这张在移动的牌，有一个顶点在其坐标范围内。
 	getHoverDoms:function(domObj){
+
+		if(this.getHoverBottom(domObj)){
+			return;
+		}
+		this.getHoverOk(domObj);
+		domObj.show();
+		$(".MovingBrand").remove();
+	},
+	//移动到下面的
+	getHoverBottom:function(domObj){
 		//检测是否移动到了下面的牌的区域内
 		var bottomDoms = $(".bottom-brands"); //.brand-open
 		var bottomLen = bottomDoms.length;
@@ -397,7 +444,38 @@ debugger;
 			}
 
 		}
-		console.log(inDomsArr);
+		var inLen = inDomsArr.length;
+		// 表示不在任何一个地方。则回到原地去。
+		if(0 == inLen){
+			return false;
+		}else{
+			//对于区域内的。进行检查。
+			// debugger;
+			//表示在移动的有几张牌
+			var moveLen = domObj.parent().find('.brand-open').length;
+			for (var j = 0; j < inDomsArr.length; j++) {
+				//移动，两个都适合的情况移动第一个。
+				if(this.moveArr(this.downArr[domIndex].slice(0,moveLen),this.downArr[inDomsArr[j]],domObj)){
+					break;
+				};
+			}
+			return true;
+		}
+	},
+	//移动到右上的
+	getHoverOk:function(domObj){
+		//检测是否移动到了下面的牌的区域内
+		var okDoms = $(".ok-brands"); //.brand-open
+		var okLen = okDoms.length;
+		var inDomsArr = [];
+		var domIndex = domObj.parents('.bottom-brands').index();
+		for (var i = 0; i < okLen; i++) {
+
+			if(this.checkHover(okDoms.eq(i),$(".MovingBrand"))){
+				inDomsArr.push(i);
+			}
+
+		}
 		var inLen = inDomsArr.length;
 		// 表示不在任何一个地方。则回到原地去。
 		if(0 == inLen){
@@ -405,13 +483,15 @@ debugger;
 			$(".MovingBrand").remove();
 		}else{
 			//对于区域内的。进行检查。
-			debugger;
+			// debugger;
 			//表示在移动的有几张牌
 			var moveLen = domObj.parent().find('.brand-open').length;
+			if(moveLen>1){
+				return;
+			}
 			for (var j = 0; j < inDomsArr.length; j++) {
 				//移动，两个都适合的情况移动第一个。
-				console.log(this.downArr[domIndex].slice(0,moveLen));
-				if(this.moveArr(this.downArr[domIndex].slice(0,moveLen),this.downArr[inDomsArr[j]],domObj)){
+				if(this.moveOkArr(this.downArr[domIndex][0],inDomsArr[j],domObj)){
 					break;
 				};
 			}
@@ -481,13 +561,63 @@ debugger;
 		$("body").on('click', '.left-close', function(event) {		
 			that.openTop();
 		});
-
+		var timer;
 		$("body").on('mousedown', '.brand-open:not(.MovingBrand)', function(event) {
-			if(that.moving == true) return;
-			that.moving == true;			
-			that.moveBrands($(this),event);
+			// console.log(1);
+			var domObj = $(this);
+			clearTimeout(timer);
+			$("body").off('mouseup');
+			timer = setTimeout(function(){
+				if(that.moving == true) return;
+				
+				that.moving == true;			
+				that.moveBrands(domObj,event);
+			}, 0);
 		});
+		//点两下回到正确的位置,这个先不做。
+		// $("body").on('dblclick ', '.brand-open:not(.MovingBrand)', function(event) {
+		// 	console.log(2);
+		// 	clearTimeout(timer);
+		// 	$(".brand-open:not(.MovingBrand)").show();
+		// 	$(".MovingBrand").remove();
+		// 	$("body").off('mouseup');
 
+		// 	// debugger;
+		// 	var where = that.getWhere($(this));
+		// 	var moveObj;
+		// 	var fromArr;
+
+		// 	//如果它在右上，则不执行操作。
+		// 	if(where == 'in-ok-brands'){
+		// 		return;
+		// 	}
+		// 	//在下面
+		// 	if(where == 'in-bottom-brands'){
+		// 		var fromIndex = $(this).parents(".bottom-brands").index();
+		// 		var fromArr = that.downArr[fromIndex];
+		// 		that.autoGoHome(fromArr);
+
+		// 	}
+		// 	//在左上
+		// 	if(where == 'in-left-open'){
+
+		// 	}
+
+
+
+		// });
+	},
+	//检测一个节点是位于哪个位置
+	getWhere:function(domObj){
+		if(domObj.parents(".ok-brands").length>0){
+			return 'in-ok-brands';
+		}
+		if(domObj.parents(".bottom-brands").length>0){
+			return 'in-bottom-brands';
+		}
+		if(domObj.parents(".left-open").length>0){
+			return 'in-left-open';
+		}
 	}
 
 
