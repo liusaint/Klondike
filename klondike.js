@@ -141,26 +141,45 @@ Klondike.prototype = {
 			return false;
 		}
 		// debugger;
-		for (var i = arrFrom.length-1; i >=0; i--) {
+		var fromLen = arrFrom.length;
+		for (var i = fromLen-1; i >=0; i--) {
 			arrTo.unshift(arrFrom[i]);
 		}
 		var fromArrIndex = domObj.parents('.bottom-brands').index();
+
+		//判断是否在上面。是否是从上面移动。
+		var isLeft = !!(domObj.parents('.left-open').length>0);
+
 		var toArrIndex = this.getArrIndex(arrTo,this.downArr);
 		console.log(fromArrIndex);
-		$(".MovingBrand").removeClass("MovingBrand").appendTo(".bottom-brands:eq("+toArrIndex+") .brand:last");
+
+		//没有就直接添加，有就添加到最后一个里。
+		if($(".bottom-brands:eq("+toArrIndex+") .brand").length>0){
+			$(".MovingBrand").removeClass("MovingBrand").appendTo(".bottom-brands:eq("+toArrIndex+") .brand:last");
+		}else{
+			$(".MovingBrand").removeClass("MovingBrand").appendTo(".bottom-brands:eq("+toArrIndex+")");
+		}
+		
 
 		domObj.remove();
 		//删除第一个元素.后期可用splice进行多个的操作。
-		this.downArr[fromArrIndex].shift();
-
-		this.downArr[fromArrIndex][0]
-		&&(this.downArr[fromArrIndex][0].status = 'open')
-		&&$(".bottom-brands:eq("+fromArrIndex+") .brand:last")
-		.addClass('brand-open')
-		.removeClass('brand-close')
-		.addClass(this.downArr[fromArrIndex][0].type)
-		.html('<span class="txt">'+this.downArr[fromArrIndex][0].num+'</span><i></i>');
-		arrFrom.length = 0;
+		if(isLeft){
+			//注意这里的topLeftIndex会不会影响上面的逻辑。
+			this.upArr.splice(this.topLeftIndex-1,1);
+			this.topLeftIndex--;
+		}else{
+			this.downArr[fromArrIndex].splice(0,fromLen);
+			this.downArr[fromArrIndex][0]
+			&&(this.downArr[fromArrIndex][0].status = 'open')
+			&&$(".bottom-brands:eq("+fromArrIndex+") .brand:last")
+			.addClass('brand-open')
+			.removeClass('brand-close')
+			.addClass(this.downArr[fromArrIndex][0].type)
+			.html('<span class="txt">'+this.downArr[fromArrIndex][0].num+'</span><i></i>');
+			arrFrom.length = 0;
+		}
+		
+		return true;
 	},
 	//获取一个arr在另一个arr中的次序。这里可以用判断对象相等。
 	getArrIndex:function(arrSmall,arrBig){
@@ -190,7 +209,7 @@ Klondike.prototype = {
 		if(toLen == 0){
 			bigIndex = -1;
 		}else{
-			bigIndex = this.getIndex(toArr[toArr.length-1].num);
+			bigIndex = this.getIndex(toArr[toArr.length-1]);
 		}
 		//检测是否与已有的最大值相关一个序号。
 		if(index - bigIndex != 1){
@@ -211,13 +230,8 @@ Klondike.prototype = {
 
 		var fromArrIndex = domObj.parents('.bottom-brands').index();
 		
-		console.log(fromArrIndex);
-		// if($(".ok-brands:eq("+toIndex+") .brand").length>0){
-		// 	$(".MovingBrand").removeClass("MovingBrand").appendTo(".ok-brands:eq("+toIndex+") .brand:last");
-		// }else{
-			$(".MovingBrand").removeClass("MovingBrand").appendTo(".ok-brands:eq("+toIndex+")");
-		// }
-		
+
+		$(".MovingBrand").removeClass("MovingBrand").appendTo(".ok-brands:eq("+toIndex+")");
 
 		domObj.remove();
 		//删除第一个元素.后期可用splice进行多个的操作。
@@ -231,39 +245,40 @@ Klondike.prototype = {
 		.addClass(this.downArr[fromArrIndex][0].type)
 		.html('<span class="txt">'+this.downArr[fromArrIndex][0].num+'</span><i></i>');
 		
+		return true;
 
 	},
 	//如果它符合条件。可以把它移动到okArr中去
-	checkGoHome:function(obj){
-		var type = obj.type;
-		var toArr = this.okObj[type];
-		var toLen = toArr.length;
-		var theIndex = this.getIndex(obj);
-		//目标数组是空的，则检测其index
-		if( 0 == toLen && theIndex == 0){
-			return true;
-		}
-		//如果这个值的index等于目的数组的长度。则可以。
-		if(theIndex == toLen){
-			return true;
-		}
-		return false;
-	},
+	// checkGoHome:function(obj){
+	// 	var type = obj.type;
+	// 	var toArr = this.okObj[type];
+	// 	var toLen = toArr.length;
+	// 	var theIndex = this.getIndex(obj);
+	// 	//目标数组是空的，则检测其index
+	// 	if( 0 == toLen && theIndex == 0){
+	// 		return true;
+	// 	}
+	// 	//如果这个值的index等于目的数组的长度。则可以。
+	// 	if(theIndex == toLen){
+	// 		return true;
+	// 	}
+	// 	return false;
+	// },
 	//点两下自动回家。
-	autoGoHome:function(fromArr){
-		var obj = fromArr[0];
-		//检测一下。
-		console.log(this.checkGoHome(obj));
-		if(!this.checkGoHome(obj)){
-			return;
-		}
+	// autoGoHome:function(fromArr){
+	// 	var obj = fromArr[0];
+	// 	//检测一下。
+	// 	console.log(this.checkGoHome(obj));
+	// 	if(!this.checkGoHome(obj)){
+	// 		return;
+	// 	}
 
-		// 移动到目的数组
-		var type = obj.type;
-		var toArr = this.okObj[type];
-		toArr.push(obj);
-		fromArr.length = fromArr.length - 1;
-	},
+	// 	// 移动到目的数组
+	// 	var type = obj.type;
+	// 	var toArr = this.okObj[type];
+	// 	toArr.push(obj);
+	// 	fromArr.length = fromArr.length - 1;
+	// },
 	//点开一个左上角的
 	openTop:function(){
 
@@ -442,8 +457,10 @@ Klondike.prototype = {
 			if(this.checkHover(bottomDoms.eq(i),$(".MovingBrand"))){
 				inDomsArr.push(i);
 			}
-
 		}
+		//判断是否在上面。是否是从上面移动。
+		var isLeft = !!(domObj.parents('.left-open').length>0);
+
 		var inLen = inDomsArr.length;
 		// 表示不在任何一个地方。则回到原地去。
 		if(0 == inLen){
@@ -455,6 +472,14 @@ Klondike.prototype = {
 			var moveLen = domObj.parent().find('.brand-open').length;
 			for (var j = 0; j < inDomsArr.length; j++) {
 				//移动，两个都适合的情况移动第一个。
+				//如果是左上移动下来的。
+				if(isLeft){
+					if(this.moveArr([this.upArr[this.topLeftIndex-1]],this.downArr[inDomsArr[j]],domObj)){
+						break;
+					};
+					continue;
+				}
+
 				if(this.moveArr(this.downArr[domIndex].slice(0,moveLen),this.downArr[inDomsArr[j]],domObj)){
 					break;
 				};
@@ -573,6 +598,7 @@ Klondike.prototype = {
 				that.moving == true;			
 				that.moveBrands(domObj,event);
 			}, 0);
+			return false;
 		});
 		//点两下回到正确的位置,这个先不做。
 		// $("body").on('dblclick ', '.brand-open:not(.MovingBrand)', function(event) {
