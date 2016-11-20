@@ -209,7 +209,7 @@ Klondike.prototype = {
 		if(toLen == 0){
 			bigIndex = -1;
 		}else{
-			bigIndex = this.getIndex(toArr[toArr.length-1]);
+			bigIndex = this.getIndex(toArr[0]);
 		}
 		//检测是否与已有的最大值相关一个序号。
 		if(index - bigIndex != 1){
@@ -230,20 +230,30 @@ Klondike.prototype = {
 
 		var fromArrIndex = domObj.parents('.bottom-brands').index();
 		
+		//判断是否在上面。是否是从上面移动。
+		var isLeft = !!(domObj.parents('.left-open').length>0);
 
 		$(".MovingBrand").removeClass("MovingBrand").appendTo(".ok-brands:eq("+toIndex+")");
 
 		domObj.remove();
 		//删除第一个元素.后期可用splice进行多个的操作。
-		this.downArr[fromArrIndex].shift();
+		if(isLeft){
+			//注意这里的topLeftIndex会不会影响上面的逻辑。
+			this.upArr.splice(this.topLeftIndex-1,1);
+			this.topLeftIndex--;
+		}else{
+			this.downArr[fromArrIndex].shift();
+			this.downArr[fromArrIndex][0]
+			&&(this.downArr[fromArrIndex][0].status = 'open')
+			&&$(".bottom-brands:eq("+fromArrIndex+") .brand:last")
+			.addClass('brand-open')
+			.removeClass('brand-close')
+			.addClass(this.downArr[fromArrIndex][0].type)
+			.html('<span class="txt">'+this.downArr[fromArrIndex][0].num+'</span><i></i>');
+		}
+		
 
-		this.downArr[fromArrIndex][0]
-		&&(this.downArr[fromArrIndex][0].status = 'open')
-		&&$(".bottom-brands:eq("+fromArrIndex+") .brand:last")
-		.addClass('brand-open')
-		.removeClass('brand-close')
-		.addClass(this.downArr[fromArrIndex][0].type)
-		.html('<span class="txt">'+this.downArr[fromArrIndex][0].num+'</span><i></i>');
+
 		
 		return true;
 
@@ -501,6 +511,9 @@ Klondike.prototype = {
 			}
 
 		}
+		//判断是否在上面。是否是从上面移动。
+		var isLeft = !!(domObj.parents('.left-open').length>0);
+
 		var inLen = inDomsArr.length;
 		// 表示不在任何一个地方。则回到原地去。
 		if(0 == inLen){
@@ -511,11 +524,18 @@ Klondike.prototype = {
 			// debugger;
 			//表示在移动的有几张牌
 			var moveLen = domObj.parent().find('.brand-open').length;
-			if(moveLen>1){
+			if(moveLen>1 && (!isLeft)){
 				return;
 			}
 			for (var j = 0; j < inDomsArr.length; j++) {
 				//移动，两个都适合的情况移动第一个。
+				if(isLeft){
+
+					if(this.moveOkArr(this.upArr[this.topLeftIndex-1],inDomsArr[j],domObj)){
+						break;
+					};
+					continue;
+				}
 				if(this.moveOkArr(this.downArr[domIndex][0],inDomsArr[j],domObj)){
 					break;
 				};
