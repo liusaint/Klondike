@@ -5,6 +5,116 @@
 *date:20161028
 */
 
+
+//整合一个工具类,把一些逻辑抽出来。
+
+var Tools = {
+	//从一个数组Arr中随机取出num个元素
+	getRoundBrand:function(num,Arr){
+		var resArr = [];
+		// 乱序排列一下。洗牌。
+		Arr.sort(function(){
+			return Math.random()-0.5>0;
+		})
+		//获取返回的数组
+		resArr = Arr.slice(0,num);
+		//从原数组中删除
+		Arr.splice(0,num);
+		return resArr;
+
+	},
+	//获取某张牌的index。用来比较大小。
+	getIndex:function(obj){
+		var num = obj.num;
+		var index;
+		switch(num){
+			case 'A':
+			index = 0;
+			break;
+			case 'J':
+			index = 10;
+			break;
+			case 'Q':
+			index = 11;
+			break;
+			case 'K':
+			index = 12;
+			break;
+			default:
+			index = num-1;
+			break;
+		}
+		return index;
+	},
+	//获取一个arr在另一个arr中的次序。这里可以用判断对象相等。
+	getArrIndex:function(arrSmall,arrBig){
+		for (var i = 0,len=arrBig.length; i < len; i++) {
+			if(arrSmall == arrBig[i]){
+				return i;
+			}
+		}
+
+	},
+	//检测牌是否移动到了某个区域内。
+	//检测这张在移动的牌，有一个顶点在其坐标范围内。
+	//A移动到B上。
+	checkHover:function(domAObj,domBObj){
+
+		// 目标dom的左上和右下坐标。
+		var BOffset = domBObj.offset();
+		var BX = BOffset.left;
+		var BY = BOffset.top;
+		var BX1 = BX + domBObj[0].offsetWidth; 
+		var BY1 = BY + domBObj[0].offsetHeight; 
+
+		//移动者
+		var AOffset = domAObj.offset();
+		var height = domAObj[0].offsetHeight;
+		var width = domAObj[0].offsetWidth;
+
+		//
+		var checkArr = [];
+		// 左上角
+		var AX = AOffset.left;
+		var AY = AOffset.top;
+		checkArr.push([AX,AY]);		
+
+		// 右上
+		var AX1 = AX + width;
+		var AY1 = AY;
+		checkArr.push([AX1,AY1]);			
+
+		// 左下
+		var AX2 = AX;
+		var AY2 = AY + height;
+		checkArr.push([AX2,AY2]);	
+
+		//右下
+		var AX3 = AX + width; 
+		var AY3 = AY + height;
+		checkArr.push([AX3,AY3]);
+
+		for (var i = 0,checkLen = checkArr.length; i < checkLen; i++) {
+			var checkRes = checkIn(checkArr[i][0],checkArr[i][1]);
+			if(checkRes){
+				return checkRes;
+			}
+		}	 
+
+		//检测坐标是否在某区域内。
+		function checkIn(x,y){
+
+			if(x>BX && y>BY && x<BX1 && y<BY1){
+				return true;
+			}
+			return false;
+		}
+
+	}
+}
+
+
+
 function Klondike(){
 	//备份一个原始的数据
 	this.baseBrand = this.createAll();
@@ -35,34 +145,21 @@ Klondike.prototype = {
 		}
 		return pArr;
 	},
-	//从一个数组Arr中随机取出num个元素
-	getRoundBrand:function(num,Arr){
-		var resArr = [];
-		// 乱序排列一下。洗牌。
-		Arr.sort(function(){
-			return Math.random()-0.5>0;
-		})
-		//获取返回的数组
-		resArr = Arr.slice(0,num);
-		//从原数组中删除
-		Arr.splice(0,num);
-		return resArr;
 
-	},
 	//发牌
 	divBrand:function(){
 		//用来发牌
 		this.useBrand = this.baseBrand.slice();
 		//左上角的24张牌
-		this.upArr = this.getRoundBrand(24,this.useBrand);
+		this.upArr = Tools.getRoundBrand(24,this.useBrand);
 		this.openBrand(this.upArr);
 		//下面的28张牌-将再次分发
-		this.downAllArr = this.getRoundBrand(28,this.useBrand);
+		this.downAllArr = Tools.getRoundBrand(28,this.useBrand);
 		this.downArr = [];
 		//下面七条。每条分别为1到7个。
 		var downLen = 7;
 		for (var i = 0; i < downLen; i++) {
-			this.downArr[i] = this.getRoundBrand(i+1,this.downAllArr);
+			this.downArr[i] = Tools.getRoundBrand(i+1,this.downAllArr);
 			//翻开第一张
 			this.openBrand(this.downArr[i]);
 			this.creatBottomDoms(this.downArr[i],i);
@@ -80,29 +177,6 @@ Klondike.prototype = {
 	openBrand:function(arr,index){
 		index = index || 0;
 		arr[index] && (arr[index].status = 'open');
-	},
-	//获取某张牌的index。用来比较大小。
-	getIndex:function(obj){
-		var num = obj.num;
-		var index;
-		switch(num){
-			case 'A':
-			index = 0;
-			break;
-			case 'J':
-			index = 10;
-			break;
-			case 'Q':
-			index = 11;
-			break;
-			case 'K':
-			index = 12;
-			break;
-			default:
-			index = num-1;
-			break;
-		}
-		return index;
 	},
 	//判断两张牌的颜色是否一样,不一样就返回true,一样就返回false;
 	checkColor:function(obj1,obj2){
@@ -123,7 +197,7 @@ Klondike.prototype = {
 		//目标数组中最小值
 		var toLittle = arrTo[0];
 		//出发数组中的最大值与目的数组中的最小值得比较。颜色不同。
-		if((this.getIndex(toLittle) - this.getIndex(fromBig) == 1)&&this.checkColor(toLittle,fromBig)){
+		if((Tools.getIndex(toLittle) - Tools.getIndex(fromBig) == 1)&&this.checkColor(toLittle,fromBig)){
 			return true;
 		}
 
@@ -150,7 +224,7 @@ Klondike.prototype = {
 		//判断是否在上面。是否是从上面移动。
 		var isLeft = !!(domObj.parents('.left-open').length>0);
 
-		var toArrIndex = this.getArrIndex(arrTo,this.downArr);
+		var toArrIndex = Tools.getArrIndex(arrTo,this.downArr);
 		console.log(fromArrIndex);
 
 		//没有就直接添加，有就添加到最后一个里。
@@ -181,20 +255,11 @@ Klondike.prototype = {
 		
 		return true;
 	},
-	//获取一个arr在另一个arr中的次序。这里可以用判断对象相等。
-	getArrIndex:function(arrSmall,arrBig){
-		for (var i = 0,len=arrBig.length; i < len; i++) {
-			if(arrSmall == arrBig[i]){
-				return i;
-			}
-		}
-
-	},
 
 	//检测移动到右上的几个框里行不行。参数是这张牌对应的这个obj参数。
 	checkMoveOk:function(obj,domIndex){
 		
-		var index = this.getIndex(obj);
+		var index = Tools.getIndex(obj);
 		var acceptDom = $(".ok-brands").eq(domIndex);
 
 		// 类型不合适
@@ -209,7 +274,7 @@ Klondike.prototype = {
 		if(toLen == 0){
 			bigIndex = -1;
 		}else{
-			bigIndex = this.getIndex(toArr[0]);
+			bigIndex = Tools.getIndex(toArr[0]);
 		}
 		//检测是否与已有的最大值相关一个序号。
 		if(index - bigIndex != 1){
@@ -316,12 +381,6 @@ Klondike.prototype = {
 		// }
 		this.upArr.splice(this.topLeftIndex-1,1);
 	},
-	insertBrand:function(){
-
-	},
-	searchIndex:function(dom,arr){
-
-	},
 	createBrandDom:function(obj){
 
 		var brandHtml = '';
@@ -376,10 +435,7 @@ Klondike.prototype = {
 		}
 		jqObj.append(brandHtml)
 	},
-	//左边打开一个
-	openLeft:function(){
 
-	},
 	//移动牌。
 	moveBrands:function(domObj,domE){
 		var that = this;
@@ -464,7 +520,7 @@ Klondike.prototype = {
 			if(i == domIndex){
 				continue;
 			}
-			if(this.checkHover(bottomDoms.eq(i),$(".MovingBrand"))){
+			if(Tools.checkHover(bottomDoms.eq(i),$(".MovingBrand"))){
 				inDomsArr.push(i);
 			}
 		}
@@ -506,7 +562,7 @@ Klondike.prototype = {
 		var domIndex = domObj.parents('.bottom-brands').index();
 		for (var i = 0; i < okLen; i++) {
 
-			if(this.checkHover(okDoms.eq(i),$(".MovingBrand"))){
+			if(Tools.checkHover(okDoms.eq(i),$(".MovingBrand"))){
 				inDomsArr.push(i);
 			}
 
@@ -542,63 +598,7 @@ Klondike.prototype = {
 			}
 		}
 	},
-	//检测牌是否移动到了某个区域内。
-	//检测这张在移动的牌，有一个顶点在其坐标范围内。
-	//A移动到B上。
-	checkHover:function(domAObj,domBObj){
 
-
-		// 目标dom的左上和右下坐标。
-		var BOffset = domBObj.offset();
-		var BX = BOffset.left;
-		var BY = BOffset.top;
-		var BX1 = BX + domBObj[0].offsetWidth; 
-		var BY1 = BY + domBObj[0].offsetHeight; 
-
-		//移动者
-		var AOffset = domAObj.offset();
-		var height = domAObj[0].offsetHeight;
-		var width = domAObj[0].offsetWidth;
-
-		//
-		var checkArr = [];
-		// 左上角
-		var AX = AOffset.left;
-		var AY = AOffset.top;
-		checkArr.push([AX,AY]);		
-
-		// 右上
-		var AX1 = AX + width;
-		var AY1 = AY;
-		checkArr.push([AX1,AY1]);			
-
-		// 左下
-		var AX2 = AX;
-		var AY2 = AY + height;
-		checkArr.push([AX2,AY2]);	
-
-		//右下
-		var AX3 = AX + width; 
-		var AY3 = AY + height;
-		checkArr.push([AX3,AY3]);
-
-		for (var i = 0,checkLen = checkArr.length; i < checkLen; i++) {
-			var checkRes = checkIn(checkArr[i][0],checkArr[i][1]);
-			if(checkRes){
-				return checkRes;
-			}
-		}	 
-
-		//检测坐标是否在某区域内。
-		function checkIn(x,y){
-
-			if(x>BX && y>BY && x<BX1 && y<BY1){
-				return true;
-			}
-			return false;
-		}
-
-	},
 	//绑定事件
 	bindEvent:function(){
 		var that = this;
@@ -673,6 +673,8 @@ var g = new Klondike();
 
 g.init();
 g.bindEvent();
+
+
 
 
 /*完成步骤：
