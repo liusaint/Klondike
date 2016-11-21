@@ -110,21 +110,6 @@ var Tools = {
 			return false;
 		}
 
-	}
-}
-
-
-
-function Klondike(){
-	//备份一个原始的数据
-	this.baseBrand = this.createAll();
-
-}
-Klondike.prototype = {
-	//初始操作
-	init:function(){
-		//发牌
-		this.divBrand();
 	},
 	//生成原始的牌。52张牌
 	createAll:function(){
@@ -145,7 +130,33 @@ Klondike.prototype = {
 		}
 		return pArr;
 	},
+	//检测一个节点是位于哪个位置
+	getWhere:function(domObj){
+		if(domObj.parents(".ok-brands").length>0){
+			return 'in-ok-brands';
+		}
+		if(domObj.parents(".bottom-brands").length>0){
+			return 'in-bottom-brands';
+		}
+		if(domObj.parents(".left-open").length>0){
+			return 'in-left-open';
+		}
+	}
+}
 
+
+
+function Klondike(){
+	//备份一个原始的数据
+	this.baseBrand = Tools.createAll();
+
+}
+Klondike.prototype = {
+	//初始操作
+	init:function(){
+		//发牌
+		this.divBrand();
+	},
 	//发牌
 	divBrand:function(){
 		//用来发牌
@@ -373,14 +384,7 @@ Klondike.prototype = {
 			$(".left-close").addClass('brand-close');
 		}
 	},
-	//左上移除一个
-	leftDel:function(index){
-		// var upLen = this.upArr.length;
-		// if(upLen == 1){
-		// 	this.upArr.length = 0;
-		// }
-		this.upArr.splice(this.topLeftIndex-1,1);
-	},
+
 	createBrandDom:function(obj){
 
 		var brandHtml = '';
@@ -653,18 +657,7 @@ Klondike.prototype = {
 
 		// });
 	},
-	//检测一个节点是位于哪个位置
-	getWhere:function(domObj){
-		if(domObj.parents(".ok-brands").length>0){
-			return 'in-ok-brands';
-		}
-		if(domObj.parents(".bottom-brands").length>0){
-			return 'in-bottom-brands';
-		}
-		if(domObj.parents(".left-open").length>0){
-			return 'in-left-open';
-		}
-	}
+
 
 
 }
