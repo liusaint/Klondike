@@ -6,10 +6,10 @@
 */
 
 
-//整合一个工具类,把一些逻辑抽出来。
+//整合一个工具类,把一些逻辑抽出来。一些与主要的业务逻辑关联不大的分出来。
 
 var Tools = {
-	//从一个数组Arr中随机取出num个元素
+	//从一个数组Arr中随机取出num个元素。并从原数组中删除。 
 	getRoundBrand:function(num,Arr){
 		var resArr = [];
 		// 乱序排列一下。洗牌。
@@ -54,10 +54,8 @@ var Tools = {
 			}
 		}
 
-	},
-	//检测牌是否移动到了某个区域内。
-	//检测这张在移动的牌，有一个顶点在其坐标范围内。
-	//A移动到B上。
+	},	
+	//检测元素A与元素B是否有重合部分，检测这张在移动的牌，有一个顶点在其坐标范围内。
 	checkHover:function(domAObj,domBObj){
 
 		// 目标dom的左上和右下坐标。
@@ -111,7 +109,7 @@ var Tools = {
 		}
 
 	},
-	//生成原始的牌。52张牌
+	//生成原始的牌。52张牌。包括数字，花色。状态。
 	createAll:function(){
 		var numArr = ['A',2,3,4,5,6,7,8,9,10,'J','Q','K'];
 		//红桃 黑桃 方块 梅花
@@ -132,68 +130,51 @@ var Tools = {
 	},
 	//检测一个节点是位于哪个位置
 	getWhere:function(domObj){
+		//右上
 		if(domObj.parents(".ok-brands").length>0){
 			return 'in-ok-brands';
 		}
+		//下。
 		if(domObj.parents(".bottom-brands").length>0){
 			return 'in-bottom-brands';
 		}
+		//左上。
 		if(domObj.parents(".left-open").length>0){
 			return 'in-left-open';
 		}
-	}
-}
-
-
-
-function Klondike(){
-	//备份一个原始的数据
-	this.baseBrand = Tools.createAll();
-
-}
-Klondike.prototype = {
-	//初始操作
-	init:function(){
-		//发牌
-		this.divBrand();
 	},
-	//发牌
-	divBrand:function(){
+	//发牌。左上。和下面。参数，要操作的这个对象。
+	divBrand:function(that){
 		//用来发牌
-		this.useBrand = this.baseBrand.slice();
+		that.useBrand = that.baseBrand.slice();
 		//左上角的24张牌
-		this.upArr = Tools.getRoundBrand(24,this.useBrand);
-		this.openBrand(this.upArr);
+		that.upArr = Tools.getRoundBrand(24,that.useBrand);
+		that.openBrand(that.upArr);
 		//下面的28张牌-将再次分发
-		this.downAllArr = Tools.getRoundBrand(28,this.useBrand);
-		this.downArr = [];
+		that.downAllArr = Tools.getRoundBrand(28,that.useBrand);
+		that.downArr = [];
 		//下面七条。每条分别为1到7个。
 		var downLen = 7;
 		for (var i = 0; i < downLen; i++) {
-			this.downArr[i] = Tools.getRoundBrand(i+1,this.downAllArr);
+			that.downArr[i] = Tools.getRoundBrand(i+1,that.downAllArr);
 			//翻开第一张
-			this.openBrand(this.downArr[i]);
-			this.creatBottomDoms(this.downArr[i],i);
+			that.openBrand(that.downArr[i]);
+			Tools.creatBottomDoms(that.downArr[i],i);
 		}
-		this.okObj = {
+		that.okObj = {
 			'red-heart':[],
 			'black-spade':[],
 			'red-block':[],
 			'black-plum':[]
 		}
 		//左上角下次打开的是哪一个，默认是0。
-		this.topLeftIndex = 0;
-	},
-	//翻牌，打开一张牌。第二个参数不填就默认翻第一张
-	openBrand:function(arr,index){
-		index = index || 0;
-		arr[index] && (arr[index].status = 'open');
+		that.topLeftIndex = 0;
 	},
 	//判断两张牌的颜色是否一样,不一样就返回true,一样就返回false;
 	checkColor:function(obj1,obj2){
 		return obj1.type.split("-")[0] !== obj2.type.split("-")[0]
 	},
-	//判断一张牌或一个数组是否可以移动到指定位置 规则
+	//判断一个数组是否可以移动到另一个数组中。针对移动到下面。
 	checkMove:function(arrFrom,arrTo){
 		//出发数组中最大值。
 		var fromBig = arrFrom[arrFrom.length-1];
@@ -208,19 +189,97 @@ Klondike.prototype = {
 		//目标数组中最小值
 		var toLittle = arrTo[0];
 		//出发数组中的最大值与目的数组中的最小值得比较。颜色不同。
-		if((Tools.getIndex(toLittle) - Tools.getIndex(fromBig) == 1)&&this.checkColor(toLittle,fromBig)){
+		if((Tools.getIndex(toLittle) - Tools.getIndex(fromBig) == 1)&&Tools.checkColor(toLittle,fromBig)){
 			return true;
 		}
 
 		return false;
 
 	},
+	//根据obj创建一张牌
+	createBrandDom:function(obj){
+
+		var brandHtml = '';
+		var type = obj.type;
+		var num = obj.num;
+		var status = obj.status;
+		var cssClass = '';
+
+		if(status == 'close'){
+			cssClass = 'brand brand-close';
+			brandHtml = '<div class="'+cssClass+'">'
+			+'</div>';
+		}else{
+			cssClass = 'brand brand-open '+type;
+			brandHtml = '<div class="'+cssClass+'">'
+			+'<span class="txt">'+ num +'</span>'
+			+'<i></i>'
+			+'</div>';
+		}
+
+		return brandHtml;
+	},
+
+	//创建下面的初始牌
+	creatBottomDoms:function(arr,index){
+		var html = '';
+		var brandHtml = '';
+		var type;
+		var num;
+		var status;
+		var cssClass;
+		var jqObj = $('.bottom-brands').eq(index);
+		for (var i = 0,len = arr.length; i < arr.length; i++) {
+			type = arr[i].type;
+			num = arr[i].num;
+			status =arr[i].status;
+			if(status == 'close'){
+				cssClass = 'brand brand-close';
+				brandHtml = '<div class="'+cssClass+'">'
+				+ brandHtml
+				+'</div>';
+
+			}else{
+				cssClass = 'brand brand-open '+type;
+
+				brandHtml = '<div class="'+cssClass+'">'
+				+'<span class="txt">'+ num +'</span>'
+				+'<i></i>'
+				+ brandHtml
+				+'</div>';
+			}
+		}
+		jqObj.append(brandHtml)
+	},
+
+}
+
+
+
+function Klondike(){
+	//备份一个原始的数据
+	this.baseBrand = Tools.createAll();
+
+}
+//核心逻辑在下面
+Klondike.prototype = {
+	//初始操作
+	init:function(){
+		//发牌,把实例对象传递过去。
+		Tools.divBrand(this);
+	},
+	//翻牌，打开一张牌。第二个参数不填就默认翻第一张
+	openBrand:function(arr,index){
+		index = index || 0;
+		arr[index] && (arr[index].status = 'open');
+	},
+
 
 	//数组移动。从左上移动。或下面的牌之间的移动。一张或几张。
 	moveArr:function(arrFrom,arrTo,domObj){
 		//检测是否可以移动
 		
-		if(!this.checkMove(arrFrom,arrTo)){
+		if(!Tools.checkMove(arrFrom,arrTo)){
 			domObj.show();
 			$(".MovingBrand").remove();
 			return false;
@@ -370,7 +429,7 @@ Klondike.prototype = {
 
 		this.upArr;
 		this.upArr[this.topLeftIndex].status = open;
-		var html = this.createBrandDom(this.upArr[this.topLeftIndex]);
+		var html = Tools.createBrandDom(this.upArr[this.topLeftIndex]);
 		$(".left-open").append(html);
 		this.changeLeftIndex();
 		
@@ -385,60 +444,9 @@ Klondike.prototype = {
 		}
 	},
 
-	createBrandDom:function(obj){
 
-		var brandHtml = '';
-		var type = obj.type;
-		var num = obj.num;
-		var status = obj.status;
-		var cssClass = '';
-
-		if(status == 'close'){
-			cssClass = 'brand brand-close';
-			brandHtml = '<div class="'+cssClass+'">'
-			+'</div>';
-		}else{
-			cssClass = 'brand brand-open '+type;
-			brandHtml = '<div class="'+cssClass+'">'
-			+'<span class="txt">'+ num +'</span>'
-			+'<i></i>'
-			+'</div>';
-		}
-
-		return brandHtml;
-	},
 	//下面是一些dom方法。
-	//创建下面的初始。
-	creatBottomDoms:function(arr,index){
-		var html = '';
-		var brandHtml = '';
-		var type;
-		var num;
-		var status;
-		var cssClass;
-		var jqObj = $('.bottom-brands').eq(index);
-		for (var i = 0,len = arr.length; i < arr.length; i++) {
-			type = arr[i].type;
-			num = arr[i].num;
-			status =arr[i].status;
-			if(status == 'close'){
-				cssClass = 'brand brand-close';
-				brandHtml = '<div class="'+cssClass+'">'
-				+ brandHtml
-				+'</div>';
 
-			}else{
-				cssClass = 'brand brand-open '+type;
-
-				brandHtml = '<div class="'+cssClass+'">'
-				+'<span class="txt">'+ num +'</span>'
-				+'<i></i>'
-				+ brandHtml
-				+'</div>';
-			}
-		}
-		jqObj.append(brandHtml)
-	},
 
 	//移动牌。
 	moveBrands:function(domObj,domE){
