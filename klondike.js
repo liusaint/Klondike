@@ -23,29 +23,6 @@ var Tools = {
 		return resArr;
 
 	},
-	//获取某张牌的index。用来比较大小。
-	getIndex:function(obj){
-		var num = obj.num;
-		var index;
-		switch(num){
-			case 'A':
-			index = 0;
-			break;
-			case 'J':
-			index = 10;
-			break;
-			case 'Q':
-			index = 11;
-			break;
-			case 'K':
-			index = 12;
-			break;
-			default:
-			index = num-1;
-			break;
-		}
-		return index;
-	},
 	//获取一个arr在另一个arr中的次序。这里可以用判断对象相等。
 	getArrIndex:function(arrSmall,arrBig){
 		for (var i = 0,len=arrBig.length; i < len; i++) {
@@ -54,7 +31,7 @@ var Tools = {
 			}
 		}
 
-	},	
+	},
 	//检测元素A与元素B是否有重合部分，检测这张在移动的牌，有一个顶点在其坐标范围内。
 	checkHover:function(domAObj,domBObj){
 
@@ -108,6 +85,30 @@ var Tools = {
 			return false;
 		}
 
+	},
+	
+	//获取某张牌的index。用来比较大小。
+	getIndex:function(obj){
+		var num = obj.num;
+		var index;
+		switch(num){
+			case 'A':
+			index = 0;
+			break;
+			case 'J':
+			index = 10;
+			break;
+			case 'Q':
+			index = 11;
+			break;
+			case 'K':
+			index = 12;
+			break;
+			default:
+			index = num-1;
+			break;
+		}
+		return index;
 	},
 	//生成原始的牌。52张牌。包括数字，花色。状态。
 	createAll:function(){
@@ -219,7 +220,6 @@ var Tools = {
 
 		return brandHtml;
 	},
-
 	//创建下面的初始牌
 	creatBottomDoms:function(arr,index){
 		var html = '';
@@ -284,7 +284,7 @@ Klondike.prototype = {
 			$(".MovingBrand").remove();
 			return false;
 		}
-		// debugger;
+
 		var fromLen = arrFrom.length;
 		for (var i = fromLen-1; i >=0; i--) {
 			arrTo.unshift(arrFrom[i]);
@@ -337,7 +337,6 @@ Klondike.prototype = {
 			return false;
 		}
 		var type = obj.type;
-		debugger;
 		var toArr = this.okObj[type];
 		var toLen = toArr.length;
 		var bigIndex;
@@ -496,7 +495,6 @@ Klondike.prototype = {
 		});
 
 		$("body").off('mouseup').on('mouseup',function(event) {	
-		// debugger;	
 		drag = false;
 		clearTimeout(timer);
 		that.moving = false;
@@ -545,7 +543,7 @@ Klondike.prototype = {
 			return false;
 		}else{
 			//对于区域内的。进行检查。
-			// debugger;
+
 			//表示在移动的有几张牌
 			var moveLen = domObj.parent().find('.brand-open').length;
 			for (var j = 0; j < inDomsArr.length; j++) {
@@ -589,7 +587,7 @@ Klondike.prototype = {
 			$(".MovingBrand").remove();
 		}else{
 			//对于区域内的。进行检查。
-			// debugger;
+
 			//表示在移动的有几张牌
 			var moveLen = domObj.parent().find('.brand-open').length;
 			if(moveLen>1 && (!isLeft)){
@@ -640,7 +638,7 @@ Klondike.prototype = {
 		// 	$(".MovingBrand").remove();
 		// 	$("body").off('mouseup');
 
-		// 	// debugger;
+
 		// 	var where = that.getWhere($(this));
 		// 	var moveObj;
 		// 	var fromArr;
